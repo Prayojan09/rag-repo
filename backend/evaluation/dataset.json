@@ -1,0 +1,54 @@
+{
+  "dataset_id": "company-policy-synthetic-v1",
+  "description": "Small fictional policy corpus for a reproducible smoke benchmark. Replace or extend with reviewed company documents and labeled evidence before making production quality claims.",
+  "documents": [
+    {
+      "filename": "security-policy.txt",
+      "chunks": [
+        {"id": "security-mfa", "heading": "Remote access", "page_number": 1, "text": "All employees must use multi-factor authentication when connecting to company systems remotely."},
+        {"id": "security-incidents", "heading": "Incident reporting", "page_number": 2, "text": "Suspected security incidents must be reported to the Security Operations team within one hour of discovery."},
+        {"id": "security-passwords", "heading": "Passwords", "page_number": 3, "text": "Company account passwords must contain at least 14 characters and must not be reused from personal accounts."}
+      ]
+    },
+    {
+      "filename": "leave-policy.txt",
+      "chunks": [
+        {"id": "leave-days", "heading": "Annual leave", "page_number": 1, "text": "Full-time employees receive 20 days of paid annual leave for each calendar year."},
+        {"id": "leave-request", "heading": "Requesting leave", "page_number": 2, "text": "Employees should submit annual leave requests at least five business days before the first day away."}
+      ]
+    },
+    {
+      "filename": "travel-policy.txt",
+      "chunks": [
+        {"id": "travel-class", "heading": "Air travel", "page_number": 1, "text": "Employees must book economy class for flights shorter than six hours. Business class may be booked for flights of six hours or longer with manager approval."},
+        {"id": "travel-booking", "heading": "Booking", "page_number": 2, "text": "Company travel must be booked through the approved travel portal whenever available."}
+      ]
+    },
+    {
+      "filename": "expenses-policy.txt",
+      "chunks": [
+        {"id": "expense-receipts", "heading": "Receipts", "page_number": 1, "text": "Itemized receipts are required for individual business expenses greater than 25 US dollars."},
+        {"id": "expense-deadline", "heading": "Reimbursement", "page_number": 2, "text": "Employees must submit expense reports within 30 calendar days after the expense was incurred."}
+      ]
+    },
+    {
+      "filename": "remote-work-policy.txt",
+      "chunks": [
+        {"id": "remote-stipend", "heading": "Equipment stipend", "page_number": 1, "text": "Remote employees may claim up to 500 US dollars per calendar year for approved home office equipment."},
+        {"id": "remote-location", "heading": "Work location", "page_number": 2, "text": "Employees working remotely must work from a country where the company is registered to employ staff."}
+      ]
+    }
+  ],
+  "queries": [
+    {"id": "q01", "question": "How many paid leave days does a full-time employee get?", "relevant_chunk_ids": ["leave-days"], "should_abstain": false, "answer_key_facts": ["20 days"]},
+    {"id": "q02", "question": "How far in advance should I request vacation?", "relevant_chunk_ids": ["leave-request"], "should_abstain": false, "answer_key_facts": ["five business days"]},
+    {"id": "q03", "question": "Do I need MFA when accessing work systems from home?", "relevant_chunk_ids": ["security-mfa"], "should_abstain": false, "answer_key_facts": ["multi-factor authentication"]},
+    {"id": "q04", "question": "How quickly should a suspected security incident be reported?", "relevant_chunk_ids": ["security-incidents"], "should_abstain": false, "answer_key_facts": ["one hour"]},
+    {"id": "q05", "question": "When am I allowed to book business class?", "relevant_chunk_ids": ["travel-class"], "should_abstain": false, "answer_key_facts": ["six hours", "manager approval"]},
+    {"id": "q06", "question": "What is the receipt threshold for an expense?", "relevant_chunk_ids": ["expense-receipts"], "should_abstain": false, "answer_key_facts": ["25 US dollars"]},
+    {"id": "q07", "question": "How long do I have to file expenses?", "relevant_chunk_ids": ["expense-deadline"], "should_abstain": false, "answer_key_facts": ["30 calendar days"]},
+    {"id": "q08", "question": "What is the yearly home office equipment allowance?", "relevant_chunk_ids": ["remote-stipend"], "should_abstain": false, "answer_key_facts": ["500 US dollars"]},
+    {"id": "q09", "question": "Which countries can remote employees work from?", "relevant_chunk_ids": ["remote-location"], "should_abstain": false, "answer_key_facts": ["registered to employ staff"]},
+    {"id": "q10", "question": "Which health insurance company provides our medical plan?", "relevant_chunk_ids": [], "should_abstain": true, "answer_key_facts": []}
+  ]
+}

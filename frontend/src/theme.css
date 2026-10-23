@@ -1,0 +1,480 @@
+:root {
+  color-scheme: light;
+  --page: #f5f7fb;
+  --surface: #ffffff;
+  --surface-raised: #ffffff;
+  --surface-subtle: #f8faff;
+  --text: #202b3d;
+  --text-strong: #26334a;
+  --text-muted: #778398;
+  --text-faint: #9aa4b2;
+  --border: #e5eaf1;
+  --border-soft: #edf1f6;
+  --accent: #3975e8;
+  --accent-soft: #eef4ff;
+  --shadow: 0 10px 30px rgb(31 48 74 / 7%);
+}
+
+body,
+.app-shell {
+  background: var(--page);
+  color: var(--text);
+}
+
+.sidebar,
+.citation-drawer,
+.settings-modal {
+  background: var(--surface);
+}
+
+.sidebar {
+  box-shadow: 8px 0 28px rgb(31 48 74 / 2%);
+}
+
+.topbar {
+  background: color-mix(in srgb, var(--surface) 91%, transparent);
+}
+
+.suggestion,
+.composer,
+.stat-card,
+.table-card,
+.search-card,
+.preview-page,
+.citation-chip,
+.empty-state,
+.search-empty {
+  box-shadow: 0 2px 10px rgb(31 48 74 / 3%);
+}
+
+.suggestion,
+.citation-chip,
+.button,
+.icon-button,
+.theme-toggle,
+.nav-item,
+.history-item,
+.search-card,
+.preview-page,
+.stat-card,
+.table-card {
+  transition: background-color .18s ease, border-color .18s ease, color .18s ease,
+    box-shadow .18s ease, transform .18s ease;
+}
+
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-width: 76px;
+  height: 32px;
+  padding: 0 10px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: var(--surface);
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.theme-toggle:hover {
+  border-color: #b9c9e5;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.theme-toggle:focus-visible {
+  outline: 3px solid #a9c8f7;
+  outline-offset: 2px;
+}
+
+.welcome-block h1 {
+  font-size: clamp(30px, 3.4vw, 42px);
+  line-height: 1.18;
+}
+
+.welcome-block h1 span {
+  color: #8290a5;
+}
+
+.composer,
+.table-card,
+.search-card,
+.preview-page,
+.stat-card,
+.suggestion {
+  border-radius: 12px;
+}
+
+.composer:focus-within {
+  border-color: #9db9eb;
+  box-shadow: 0 0 0 4px rgb(57 117 232 / 9%), 0 10px 28px rgb(31 48 74 / 7%);
+}
+
+.message-list {
+  gap: 29px;
+}
+
+.message-row.user .message-text {
+  border: 1px solid #e0e8f7;
+  box-shadow: 0 2px 8px rgb(31 48 74 / 4%);
+}
+
+.page-content {
+  max-width: 1120px;
+}
+
+.search-card:hover,
+.preview-page:hover {
+  border-color: #d4dfef;
+  box-shadow: var(--shadow);
+}
+
+html[data-theme='dark'] {
+  color-scheme: dark;
+  --page: #0d121b;
+  --surface: #151d29;
+  --surface-raised: #1a2432;
+  --surface-subtle: #111925;
+  --text: #d9e1ed;
+  --text-strong: #edf2fa;
+  --text-muted: #a3afc0;
+  --text-faint: #8492a6;
+  --border: #2a3749;
+  --border-soft: #222e3e;
+  --accent: #8aafff;
+  --accent-soft: #1d2d49;
+  --shadow: 0 12px 32px rgb(0 0 0 / 28%);
+  background: var(--page);
+}
+
+html[data-theme='dark'] body,
+html[data-theme='dark'] .app-shell,
+html[data-theme='dark'] .main-area,
+html[data-theme='dark'] .chat-page,
+html[data-theme='dark'] .page-content {
+  background: var(--page);
+  color: var(--text);
+}
+
+html[data-theme='dark'] .sidebar,
+html[data-theme='dark'] .profile-button,
+html[data-theme='dark'] .citation-drawer,
+html[data-theme='dark'] .settings-modal,
+html[data-theme='dark'] .action-menu,
+html[data-theme='dark'] .action-menu button {
+  background: var(--surface);
+  border-color: var(--border);
+  color: var(--text);
+}
+
+html[data-theme='dark'] .topbar {
+  background: rgb(21 29 41 / 92%);
+  border-color: var(--border);
+}
+
+html[data-theme='dark'] .brand,
+html[data-theme='dark'] .workspace-copy strong,
+html[data-theme='dark'] .profile-copy strong,
+html[data-theme='dark'] .breadcrumb strong,
+html[data-theme='dark'] .welcome-block h1,
+html[data-theme='dark'] .conversation-head h1,
+html[data-theme='dark'] .page-heading h1,
+html[data-theme='dark'] .empty-state h2,
+html[data-theme='dark'] .search-empty h2,
+html[data-theme='dark'] .modal-copy h2,
+html[data-theme='dark'] .drawer-top h2,
+html[data-theme='dark'] .citation-reading h2,
+html[data-theme='dark'] .storage-card > strong,
+html[data-theme='dark'] .stat-card strong,
+html[data-theme='dark'] .table-toolbar strong,
+html[data-theme='dark'] .file-details strong,
+html[data-theme='dark'] .drawer-file strong,
+html[data-theme='dark'] .citation-info strong,
+html[data-theme='dark'] .preview-section h3 {
+  color: var(--text-strong);
+}
+
+html[data-theme='dark'] .workspace-switch,
+html[data-theme='dark'] .storage-card,
+html[data-theme='dark'] .conversation-head,
+html[data-theme='dark'] .table-toolbar,
+html[data-theme='dark'] .document-table td,
+html[data-theme='dark'] .table-pagination,
+html[data-theme='dark'] .drawer-top,
+html[data-theme='dark'] .backend-indicator,
+html[data-theme='dark'] .answer-meta,
+html[data-theme='dark'] .preview-section + .preview-section {
+  border-color: var(--border-soft);
+}
+
+html[data-theme='dark'] .nav-item,
+html[data-theme='dark'] .history-item,
+html[data-theme='dark'] .message-author,
+html[data-theme='dark'] .message-text,
+html[data-theme='dark'] .answer-text,
+html[data-theme='dark'] .passage-paragraph,
+html[data-theme='dark'] .passage-list,
+html[data-theme='dark'] .preview-text,
+html[data-theme='dark'] .search-card > p,
+html[data-theme='dark'] .document-table td,
+html[data-theme='dark'] .citation-content,
+html[data-theme='dark'] .source-quote {
+  color: var(--text);
+}
+
+html[data-theme='dark'] .workspace-copy small,
+html[data-theme='dark'] .profile-copy small,
+html[data-theme='dark'] .welcome-block > p,
+html[data-theme='dark'] .page-heading p,
+html[data-theme='dark'] .nav-shortcut,
+html[data-theme='dark'] .nav-count,
+html[data-theme='dark'] .system-status,
+html[data-theme='dark'] .breadcrumb,
+html[data-theme='dark'] .message-author > span,
+html[data-theme='dark'] .citation-info small,
+html[data-theme='dark'] .answer-meta,
+html[data-theme='dark'] .drawer-file small,
+html[data-theme='dark'] .file-details small,
+html[data-theme='dark'] .table-toolbar span,
+html[data-theme='dark'] .table-pagination,
+html[data-theme='dark'] .storage-foot,
+html[data-theme='dark'] .stat-card span,
+html[data-theme='dark'] .modal-copy p,
+html[data-theme='dark'] .form-label,
+html[data-theme='dark'] .optional-label,
+html[data-theme='dark'] .connection-hint,
+html[data-theme='dark'] .backend-indicator,
+html[data-theme='dark'] .citation-heading,
+html[data-theme='dark'] .composer-caption {
+  color: var(--text-muted);
+}
+
+html[data-theme='dark'] .topbar,
+html[data-theme='dark'] .workspace-switch,
+html[data-theme='dark'] .storage-card,
+html[data-theme='dark'] .suggestion,
+html[data-theme='dark'] .composer,
+html[data-theme='dark'] .composer .select-wrap,
+html[data-theme='dark'] .composer .rerank-toggle,
+html[data-theme='dark'] .button-subtle,
+html[data-theme='dark'] .theme-toggle,
+html[data-theme='dark'] .stat-card,
+html[data-theme='dark'] .table-card,
+html[data-theme='dark'] .table-toolbar,
+html[data-theme='dark'] .document-table th,
+html[data-theme='dark'] .action-menu,
+html[data-theme='dark'] .action-menu button,
+html[data-theme='dark'] .empty-state,
+html[data-theme='dark'] .search-empty,
+html[data-theme='dark'] .upload-hint,
+html[data-theme='dark'] .search-form,
+html[data-theme='dark'] .segmented,
+html[data-theme='dark'] .search-card,
+html[data-theme='dark'] .citation-chip,
+html[data-theme='dark'] .preview-page,
+html[data-theme='dark'] .drawer-file,
+html[data-theme='dark'] .text-input,
+html[data-theme='dark'] .connection-hint,
+html[data-theme='dark'] .select-wrap,
+html[data-theme='dark'] .rerank-toggle {
+  background: var(--surface);
+  border-color: var(--border);
+  color: var(--text-muted);
+}
+
+html[data-theme='dark'] .composer textarea,
+html[data-theme='dark'] .search-form input,
+html[data-theme='dark'] .text-input,
+html[data-theme='dark'] .select-wrap select {
+  background: transparent;
+  color: var(--text-strong);
+}
+
+html[data-theme='dark'] .composer textarea::placeholder,
+html[data-theme='dark'] .search-form input::placeholder,
+html[data-theme='dark'] .text-input::placeholder {
+  color: #738198;
+}
+
+html[data-theme='dark'] .nav-item:hover,
+html[data-theme='dark'] .history-row:hover,
+html[data-theme='dark'] .history-row.active,
+html[data-theme='dark'] .icon-button:hover,
+html[data-theme='dark'] .action-menu button:hover {
+  background: #202d3e;
+}
+
+html[data-theme='dark'] .nav-item.active,
+html[data-theme='dark'] .history-row.active .history-item,
+html[data-theme='dark'] .theme-toggle:hover,
+html[data-theme='dark'] .rerank-toggle.selected {
+  background: #1d2d49;
+  color: #a9c4ff;
+}
+
+html[data-theme='dark'] .nav-item.active svg,
+html[data-theme='dark'] .history-item svg,
+html[data-theme='dark'] .theme-toggle:hover {
+  color: #a9c4ff;
+}
+
+html[data-theme='dark'] .workspace-avatar,
+html[data-theme='dark'] .profile-avatar,
+html[data-theme='dark'] .top-avatar,
+html[data-theme='dark'] .suggestion-icon,
+html[data-theme='dark'] .empty-icon,
+html[data-theme='dark'] .file-icon,
+html[data-theme='dark'] .citation-index,
+html[data-theme='dark'] .message-avatar.assistant-avatar {
+  background: #22314a;
+  color: #a9c4ff;
+}
+
+html[data-theme='dark'] .top-avatar,
+html[data-theme='dark'] .user-avatar {
+  background: #322b4a;
+  color: #c9b8ff;
+}
+
+html[data-theme='dark'] .message-row.user .message-text {
+  background: #211e32;
+  border-color: #37304f;
+  color: #e1dafa;
+}
+
+html[data-theme='dark'] .citation-chip:hover,
+html[data-theme='dark'] .suggestion:hover,
+html[data-theme='dark'] .search-card:hover,
+html[data-theme='dark'] .preview-page:hover {
+  background: #192333;
+  border-color: #40516a;
+}
+
+html[data-theme='dark'] .search-controls .segmented button,
+html[data-theme='dark'] .search-controls .segmented button:not(.selected) {
+  background: transparent;
+  color: var(--text-muted);
+}
+
+html[data-theme='dark'] .search-controls .segmented button.selected {
+  background: #2a3a52;
+  color: #c5d6f7;
+}
+
+html[data-theme='dark'] .document-table th {
+  background: #111925;
+  color: #91a0b4;
+}
+
+html[data-theme='dark'] .status-badge.ready {
+  background: #17372d;
+  color: #81d2ae;
+}
+
+html[data-theme='dark'] .status-badge.failed {
+  background: #3c2528;
+  color: #f0a39b;
+}
+
+html[data-theme='dark'] .status-badge.queued,
+html[data-theme='dark'] .status-badge.indexing {
+  background: #3b3220;
+  color: #e2c17b;
+}
+
+html[data-theme='dark'] .abstain-note,
+html[data-theme='dark'] .toast {
+  background: #352d20;
+  border-color: #59472b;
+  color: #e5c58c;
+}
+
+html[data-theme='dark'] .doc-error-note {
+  background: #352d20;
+  border-color: #59472b;
+  color: #e5c58c;
+}
+
+html[data-theme='dark'] .connection-hint {
+  background: #111925;
+}
+
+html[data-theme='dark'] .source-quote {
+  background: #111925;
+  border-color: var(--border);
+  border-left-color: #7498e2;
+}
+
+html[data-theme='dark'] .paragraph-match,
+html[data-theme='dark'] .passage-list .list-match {
+  background: #3a3422;
+  border-left-color: #d4ae4b;
+}
+
+html[data-theme='dark'] .evidence-match {
+  background: #665721;
+  color: #fff1b4;
+}
+
+html[data-theme='dark'] .drawer-backdrop {
+  background: rgb(0 0 0 / 60%);
+}
+
+html[data-theme='dark'] .citation-drawer {
+  box-shadow: -12px 0 35px rgb(0 0 0 / 35%);
+}
+
+html[data-theme='dark'] .citation-page-number,
+html[data-theme='dark'] .preview-page-number {
+  border-color: var(--border-soft);
+  color: #97a8bf;
+}
+
+html[data-theme='dark'] .heading-count,
+html[data-theme='dark'] .nav-count {
+  background: #25344a;
+  color: #b4c7e9;
+}
+
+html[data-theme='dark'] .storage-track {
+  background: #273346;
+}
+
+html[data-theme='dark'] .icon-button,
+html[data-theme='dark'] .topbar .help-button {
+  color: #9ba9bc;
+}
+
+html[data-theme='dark'] ::-webkit-scrollbar-thumb {
+  background: #3b485a;
+}
+
+html[data-theme='dark'] ::-webkit-scrollbar-thumb:hover {
+  background: #53637a;
+}
+
+@media (max-width: 650px) {
+  .theme-toggle {
+    min-width: 32px;
+    width: 32px;
+    padding: 0;
+  }
+
+  .theme-toggle span {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}

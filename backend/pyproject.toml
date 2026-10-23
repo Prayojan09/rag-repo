@@ -1,0 +1,18 @@
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-p no:cacheprovider"
+filterwarnings = [
+    # PyMuPDF's bundled SWIG bindings emit these known upstream warnings on recent Python versions.
+    "ignore:builtin type SwigPy(Packed|Object) has no __module__ attribute:DeprecationWarning",
+    "ignore:builtin type swigvarlink has no __module__ attribute:DeprecationWarning",
+    # Payload indexes are only meaningful on a Qdrant server, not its in-memory test client.
+    "ignore:Payload indexes have no effect in the local Qdrant.*:UserWarning",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]

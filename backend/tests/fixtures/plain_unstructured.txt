@@ -1,0 +1,2 @@
+A plain document without headings.
+It includes a second wrapped line for extraction.

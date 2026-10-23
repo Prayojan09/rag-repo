@@ -1,0 +1,12 @@
+.env
+.env.*
+!.env.example
+!.env.production.example
+.venv/
+__pycache__/
+.pytest_cache/
+.pytest_tmp/
+.upload-test-*/
+.ruff_cache/
+*.py[cod]
+data/
