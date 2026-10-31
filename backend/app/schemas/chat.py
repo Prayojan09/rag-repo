@@ -9,10 +9,11 @@ from app.schemas.documents import DenseSearchResult
 
 class ChatRequest(BaseModel):
     question: str = Field(min_length=1, max_length=4000)
+    model: str | None = Field(default=None, min_length=1, max_length=200)
     document_ids: list[str] | None = Field(default=None, max_length=100)
     mode: Literal["dense", "keyword", "hybrid"] = "hybrid"
     top_k: int | None = Field(default=None, ge=1, le=30)
-    rerank: bool = True
+    rerank: bool = False
     conversation_id: str | None = Field(default=None, min_length=36, max_length=36)
 
     @model_validator(mode="after")

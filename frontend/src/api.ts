@@ -146,7 +146,8 @@ export const api = {
   reindex: (c: ApiConfig, id: string) => request<DocumentRecord>(c, `/api/v1/documents/${id}/reindex`, { method: 'POST' }),
   search: (c: ApiConfig, payload: { query: string; mode: string; top_k: number; rerank: boolean }) =>
     request<SearchResponse>(c, '/api/v1/search', { method: 'POST', body: JSON.stringify(payload) }),
-  chat: (c: ApiConfig, payload: { question: string; mode: string; top_k: number; rerank: boolean; conversation_id?: string }) =>
+  chatModels: (c: ApiConfig) => request<string[]>(c, '/api/v1/chat/models'),
+  chat: (c: ApiConfig, payload: { question: string; model?: string; mode: string; top_k?: number; rerank: boolean; conversation_id?: string }) =>
     request<ChatResponse>(c, '/api/v1/chat', { method: 'POST', body: JSON.stringify(payload) }),
   conversations: (c: ApiConfig) => request<{ items: ConversationSummary[]; total: number }>(c, '/api/v1/conversations'),
   createConversation: (c: ApiConfig, title: string) => request<ConversationSummary>(c, `/api/v1/conversations?title=${encodeURIComponent(title)}`, { method: 'POST' }),

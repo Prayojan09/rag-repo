@@ -91,6 +91,24 @@ def test_chat_saves_user_and_structured_assistant_history(client: TestClient, mo
     assert messages[1]["response_data"]["answer_id"] == response.json()["answer_id"]
 
 
+def test_chat_model_list_returns_configured_models(client: TestClient, monkeypatch):
+    from app.api.routes import chat as chat_routes
+
+    settings = get_settings().model_copy(
+        update={
+            "llm_provider": "openai_compatible",
+            "llm_model": "provider/default",
+            "llm_available_models": "provider/default,provider/alternate",
+        }
+    )
+    monkeypatch.setattr(chat_routes, "get_settings", lambda: settings)
+
+    response = client.get("/api/v1/chat/models")
+
+    assert response.status_code == 200
+    assert response.json() == ["provider/default", "provider/alternate"]
+
+
 def test_configured_bearer_token_protects_api_routes(client: TestClient, monkeypatch):
     settings = get_settings().model_copy(update={"api_access_token": SecretStr("a" * 40)})
     monkeypatch.setattr(security, "get_settings", lambda: settings)

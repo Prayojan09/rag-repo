@@ -4,7 +4,7 @@ import re
 from functools import lru_cache
 from urllib.parse import urlsplit
 
-from pydantic import Field, PostgresDsn, SecretStr, field_validator, model_validator
+from pydantic import AliasChoices, Field, PostgresDsn, SecretStr, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -78,16 +78,23 @@ class Settings(BaseSettings):
     reranker_batch_size: int = Field(default=32, ge=1, le=256)
     reranker_candidate_k: int = Field(default=40, ge=1, le=200)
     llm_provider: str = "disabled"
-    llm_base_url: str = "https://api.openai.com/v1"
-    llm_api_key: SecretStr | None = None
+    llm_base_url: str = Field(
+        default="https://api.openai.com/v1",
+        validation_alias=AliasChoices("LLM_GATEWAY_BASE_URL", "LLM_BASE_URL"),
+    )
+    llm_api_key: SecretStr | None = Field(
+        default=None,
+        validation_alias=AliasChoices("LLM_GATEWAY_API_KEY", "LLM_API_KEY"),
+    )
     llm_model: str | None = None
+    llm_available_models: str = ""
     llm_timeout_seconds: float = Field(default=60.0, gt=0, le=300)
     llm_max_retries: int = Field(default=2, ge=0, le=3)
     llm_max_tokens: int = Field(default=2048, ge=64, le=8192)
     document_structuring_enabled: bool = True
     document_structuring_max_chars: int = Field(default=40_000, ge=1_000, le=200_000)
     document_structuring_max_tokens: int = Field(default=8192, ge=256, le=32_768)
-    chat_context_k: int = Field(default=8, ge=1, le=30)
+    chat_context_k: int = Field(default=5, ge=1, le=30)
     api_access_token: SecretStr | None = None
     api_tenant_tokens: dict[str, SecretStr] = Field(default_factory=dict)
     google_client_id: str | None = None
@@ -107,6 +114,14 @@ class Settings(BaseSettings):
         return bool(
             self.google_client_id and self.google_client_secret and self.google_redirect_uri
         )
+
+    @property
+    def available_llm_models(self) -> tuple[str, ...]:
+        """Return the configured model allowlist, including the default model."""
+        models = [item.strip() for item in self.llm_available_models.split(",") if item.strip()]
+        if self.llm_model and self.llm_model not in models:
+            models.insert(0, self.llm_model)
+        return tuple(dict.fromkeys(models))
 
     @field_validator("log_level")
     @classmethod

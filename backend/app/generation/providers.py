@@ -1,7 +1,6 @@
 """Provider-neutral LLM interface with an OpenAI-compatible HTTP adapter."""
 
 import time
-from functools import lru_cache
 from typing import Protocol
 
 import httpx
@@ -31,12 +30,13 @@ class OpenAICompatibleProvider:
         self,
         settings: Settings,
         transport: httpx.BaseTransport | None = None,
+        model_name: str | None = None,
     ) -> None:
         if not settings.llm_api_key:
             raise LLMProviderError("LLM_API_KEY is not configured")
         if not settings.llm_model:
             raise LLMProviderError("LLM_MODEL is not configured")
-        self.model_name = settings.llm_model
+        self.model_name = model_name or settings.llm_model or ""
         self._api_key = settings.llm_api_key.get_secret_value()
         self._base_url = settings.llm_base_url.rstrip("/")
         self._timeout = settings.llm_timeout_seconds
@@ -146,11 +146,16 @@ class OpenAICompatibleProvider:
         return f"{self._base_url}/v1/chat/completions"
 
 
-@lru_cache
-def get_llm_provider() -> LLMProvider:
+def get_llm_provider(model_name: str | None = None) -> LLMProvider:
+    """Create a provider for the configured default or an allowed chat model."""
     settings = get_settings()
     if settings.llm_provider == "disabled":
         raise LLMProviderError("LLM_PROVIDER is disabled")
     if settings.llm_provider == "openai_compatible":
-        return OpenAICompatibleProvider(settings)
+        selected_model = model_name or settings.llm_model
+        if not selected_model:
+            raise LLMProviderError("LLM_MODEL is not configured")
+        if selected_model not in settings.available_llm_models:
+            raise LLMProviderError("The selected LLM model is not available")
+        return OpenAICompatibleProvider(settings, model_name=selected_model)
     raise LLMProviderError("Configured LLM provider is not supported")

@@ -17,7 +17,7 @@ services:
       UPLOAD_DIR: /srv/backend/data/uploads
       HF_HOME: /cache/huggingface
     ports:
-      - "127.0.0.1:8000:8000"
+      - "127.0.0.1:8001:8001"
     volumes:
       - uploads_data:/srv/backend/data/uploads
       - models_cache:/cache/huggingface
@@ -25,7 +25,7 @@ services:
       migrate:
         condition: service_completed_successfully
     healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/ready', timeout=4)"]
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8001/ready', timeout=4)"]
       interval: 30s
       timeout: 5s
       start_period: 5m

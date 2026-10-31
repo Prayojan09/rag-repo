@@ -43,10 +43,11 @@ services:
     environment:
       DATABASE_URL: postgresql+psycopg://rag:rag@postgres:5432/rag
       QDRANT_URL: ${QDRANT_URL:-http://qdrant:6333}
+      LLM_GATEWAY_BASE_URL: ${DOCKER_LLM_GATEWAY_BASE_URL:-http://host.docker.internal:8000/v1}
       UPLOAD_DIR: /srv/backend/data/uploads
       HF_HOME: /cache/huggingface
     ports:
-      - "8000:8000"
+      - "8001:8001"
     volumes:
       - uploads_data:/srv/backend/data/uploads
       - models_cache:/cache/huggingface

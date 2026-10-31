@@ -5,11 +5,13 @@ from datetime import UTC, datetime
 from typing import Annotated
 from uuid import uuid4
 
+import httpx
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from pydantic import ValidationError
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from app.core.config import get_settings
 from app.core.security import APIPrincipal, require_api_token
 from app.db.models import Conversation, ConversationMessage
 from app.db.session import get_db
@@ -24,6 +26,15 @@ router = APIRouter(
     dependencies=[Depends(require_api_token)],
 )
 logger = logging.getLogger(__name__)
+
+
+@router.get("/models", response_model=list[str])
+def list_chat_models() -> list[str]:
+    """Return configured model IDs the signed-in user can select for chat."""
+    settings = get_settings()
+    if settings.llm_provider == "disabled":
+        return []
+    return list(settings.available_llm_models)
 
 
 @router.post("", response_model=ChatResponse)
@@ -99,7 +110,13 @@ def chat(
         # Do not log upstream prompts or model outputs: they can include document text.
         request_id = getattr(http_request.state, "request_id", "unknown")
         cause = exc.__cause__
-        provider_error = str(cause) if isinstance(cause, LLMProviderError) else "n/a"
+        provider_error = (
+            str(exc)
+            if isinstance(exc, LLMProviderError)
+            else str(cause)
+            if isinstance(cause, LLMProviderError)
+            else "n/a"
+        )
         validation_fields = "n/a"
         if isinstance(cause, ValidationError):
             validation_fields = ",".join(
@@ -119,10 +136,15 @@ def chat(
             provider_error,
             validation_fields,
         )
+        user_message = (
+            "The AI service is busy right now. Please wait a moment and try again."
+            if isinstance(cause, httpx.HTTPStatusError)
+            and cause.response.status_code == status.HTTP_429_TOO_MANY_REQUESTS
+            else (
+                "I couldn’t complete that answer just now. Please try again shortly."
+            )
+        )
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail=(
-                "Question answering is temporarily unavailable. Check the backend "
-                f"terminal for request ID {request_id}."
-            ),
+            detail=user_message,
         ) from exc

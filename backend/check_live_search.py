@@ -16,7 +16,7 @@ headers = {"Authorization": f"Bearer {token}"} if token else {}
 for mode, rerank in (("hybrid", True), ("hybrid", False), ("dense", True), ("keyword", False)):
     try:
         response = httpx.post(
-            "http://127.0.0.1:8000/api/v1/search",
+            "http://127.0.0.1:8001/api/v1/search",
             headers=headers,
             json={"query": "test", "mode": mode, "top_k": 3, "rerank": rerank},
             timeout=120,

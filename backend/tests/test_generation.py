@@ -375,10 +375,14 @@ def test_chat_endpoint_returns_request_id_and_logs_safe_provider_error(client, m
     from app.api.routes import chat as chat_routes
 
     def fail_with_provider_error(*_args, **_kwargs):
-        try:
-            raise LLMProviderError("LLM provider returned HTTP 401")
-        except LLMProviderError as cause:
-            raise ChatGenerationError("LLM response was not valid") from cause
+        response = httpx.Response(
+            401,
+            request=httpx.Request("POST", "https://llm.example.test/v1/chat/completions"),
+        )
+        cause = httpx.HTTPStatusError(
+            "unauthorized", request=response.request, response=response
+        )
+        raise LLMProviderError("LLM provider returned HTTP 401") from cause
 
     monkeypatch.setattr(chat_routes, "answer_question", fail_with_provider_error)
     response = client.post(
@@ -388,5 +392,55 @@ def test_chat_endpoint_returns_request_id_and_logs_safe_provider_error(client, m
     )
 
     assert response.status_code == 503
-    assert "chat-debug-123" in response.json()["detail"]
+    assert response.json()["detail"] == (
+        "I couldn’t complete that answer just now. Please try again shortly."
+    )
     assert "HTTP 401" in caplog.text
+    assert "chat-debug-123" in caplog.text
+
+
+def test_chat_endpoint_shows_friendly_message_for_provider_rate_limit(client, monkeypatch):
+    from app.api.routes import chat as chat_routes
+
+    def fail_with_rate_limit(*_args, **_kwargs):
+        response = httpx.Response(
+            429,
+            request=httpx.Request("POST", "https://llm.example.test/v1/chat/completions"),
+        )
+        cause = httpx.HTTPStatusError(
+            "rate limited", request=response.request, response=response
+        )
+        raise LLMProviderError("LLM provider returned HTTP 429") from cause
+
+    monkeypatch.setattr(chat_routes, "answer_question", fail_with_rate_limit)
+    response = client.post(
+        "/api/v1/chat",
+        json={"question": "Question?", "mode": "keyword", "rerank": False},
+    )
+
+    assert response.status_code == 503
+    assert response.json()["detail"] == (
+        "The AI service is busy right now. Please wait a moment and try again."
+    )
+
+
+def test_chat_model_allowlist_selects_only_configured_model(monkeypatch):
+    from pydantic import SecretStr
+
+    from app.core.config import get_settings
+    from app.generation import providers
+
+    settings = get_settings().model_copy(
+        update={
+            "llm_provider": "openai_compatible",
+            "llm_api_key": SecretStr("test-key"),
+            "llm_model": "provider/default",
+            "llm_available_models": "provider/default,provider/alternate",
+        }
+    )
+    monkeypatch.setattr(providers, "get_settings", lambda: settings)
+
+    selected = providers.get_llm_provider("provider/alternate")
+    assert selected.model_name == "provider/alternate"
+    with pytest.raises(LLMProviderError, match="not available"):
+        providers.get_llm_provider("provider/unlisted")

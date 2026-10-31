@@ -1,4 +1,4 @@
-"""Security and lifecycle tests for Google browser authentication."""
+﻿"""Security and lifecycle tests for Google browser authentication."""
 
 from datetime import UTC, datetime, timedelta
 from urllib.parse import parse_qs, urlparse
@@ -23,7 +23,7 @@ def test_google_sign_in_provisions_tenant_and_requires_csrf(
         update={
             "google_client_id": "client-id",
             "google_client_secret": SecretStr("client-secret"),
-            "google_redirect_uri": "http://localhost:8000/api/v1/auth/google/callback",
+            "google_redirect_uri": "http://localhost:8001/api/v1/auth/google/callback",
             "auth_frontend_url": "http://localhost:5173",
             "cors_allowed_origins": "http://localhost:5173",
         }
@@ -113,7 +113,7 @@ def test_auth_config_uses_backend_host_for_oauth_start(client, monkeypatch) -> N
         update={
             "google_client_id": "client-id",
             "google_client_secret": SecretStr("client-secret"),
-            "google_redirect_uri": "http://localhost:8000/api/v1/auth/google/callback",
+            "google_redirect_uri": "http://localhost:8001/api/v1/auth/google/callback",
         }
     )
     monkeypatch.setattr(auth_routes, "get_settings", lambda: settings)
@@ -121,7 +121,7 @@ def test_auth_config_uses_backend_host_for_oauth_start(client, monkeypatch) -> N
     response = client.get("/api/v1/auth/config")
 
     assert response.status_code == 200
-    assert response.json()["google_login_url"] == "http://localhost:8000/api/v1/auth/google/start"
+    assert response.json()["google_login_url"] == "http://localhost:8001/api/v1/auth/google/start"
 
 
 def test_oauth_state_is_single_use(client, monkeypatch) -> None:
@@ -130,7 +130,7 @@ def test_oauth_state_is_single_use(client, monkeypatch) -> None:
         update={
             "google_client_id": "client-id",
             "google_client_secret": SecretStr("client-secret"),
-            "google_redirect_uri": "http://localhost:8000/api/v1/auth/google/callback",
+            "google_redirect_uri": "http://localhost:8001/api/v1/auth/google/callback",
         }
     )
     monkeypatch.setattr(auth_routes, "get_settings", lambda: settings)
@@ -149,7 +149,7 @@ def test_oauth_state_must_match_the_starting_browser(client, monkeypatch) -> Non
         update={
             "google_client_id": "client-id",
             "google_client_secret": SecretStr("client-secret"),
-            "google_redirect_uri": "http://localhost:8000/api/v1/auth/google/callback",
+            "google_redirect_uri": "http://localhost:8001/api/v1/auth/google/callback",
         }
     )
     monkeypatch.setattr(auth_routes, "get_settings", lambda: settings)
@@ -172,7 +172,7 @@ def test_expired_google_session_is_rejected(client, test_engine, monkeypatch) ->
         update={
             "google_client_id": "client-id",
             "google_client_secret": "client-secret",
-            "google_redirect_uri": "http://localhost:8000/api/v1/auth/google/callback",
+            "google_redirect_uri": "http://localhost:8001/api/v1/auth/google/callback",
         }
     )
     monkeypatch.setattr(security, "get_settings", lambda: settings)
@@ -253,3 +253,4 @@ def test_google_identity_verification_classifies_audience_failure(monkeypatch) -
 
     assert error.value.failure_category == "client_id_audience_mismatch"
     assert "sensitive-value" not in str(error.value)
+

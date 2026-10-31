@@ -62,7 +62,9 @@ export default function App() {
   const [uploading, setUploading] = useState(false)
   const [query, setQuery] = useState('')
   const [mode, setMode] = useState<SearchMode>('hybrid')
-  const [rerank, setRerank] = useState(true)
+  const [llmModels, setLlmModels] = useState<string[]>([])
+  const [selectedModel, setSelectedModel] = useState('')
+  const [rerank, setRerank] = useState(false)
   const [messages, setMessages] = useState<Message[]>([])
   const [conversations, setConversations] = useState<ConversationSummary[]>([])
   const [conversationId, setConversationId] = useState<string | null>(null)
@@ -131,6 +133,21 @@ export default function App() {
     return () => { active = false }
   }, [config])
   useEffect(() => { void refresh() }, [refresh])
+  useEffect(() => {
+    if (authStatus !== 'authenticated') return
+    let active = true
+    void api.chatModels(config).then((models) => {
+      if (!active) return
+      setLlmModels(models)
+      setSelectedModel((current) => models.includes(current) ? current : models[0] ?? '')
+    }).catch(() => {
+      if (active) {
+        setLlmModels([])
+        setSelectedModel('')
+      }
+    })
+    return () => { active = false }
+  }, [authStatus, config])
   useEffect(() => {
     document.documentElement.dataset.theme = theme
     localStorage.setItem('atlas-theme', theme)
@@ -286,7 +303,7 @@ export default function App() {
         activeId = conversation.id
         setConversationId(activeId)
       }
-      const answer = await api.chat(config, { question, mode, top_k: 8, rerank, conversation_id: activeId })
+      const answer = await api.chat(config, { question, model: selectedModel || undefined, mode, rerank, conversation_id: activeId })
       setMessages((items) => [...items, { id: makeId(), role: 'assistant', text: answer.answer, answer }])
     } catch (error) {
       setMessages((items) => [...items, { id: makeId(), role: 'assistant', text: error instanceof Error ? error.message : 'The request failed.', error: true }])
@@ -408,7 +425,7 @@ export default function App() {
             <div className="conversation-head"><div><div className="eyebrow"><Sparkles size={13} /> KNOWLEDGE ASSISTANT</div><h1>Ask Atlas</h1></div><button className="button button-subtle" onClick={startConversation}><Plus size={15} /> New conversation</button></div>
             <div className="message-list">{messages.map((message) => <div className={`message-row ${message.role}`} key={message.id}><div className={message.role === 'user' ? 'message-avatar user-avatar' : 'message-avatar assistant-avatar'}>{message.role === 'user' ? 'A' : <Layers3 size={16} />}</div><div className="message-content"><div className="message-author">{message.role === 'user' ? 'You' : 'Atlas'}<span>{message.role === 'user' ? 'Just now' : message.answer?.evidence_verified ? <><ShieldCheck size={12} /> Evidence checked</> : 'Response'}</span></div>{message.role === 'assistant' && !message.error ? <AnswerText text={message.text} /> : <div className={message.error ? 'message-text error-text' : 'message-text'}>{message.text}</div>}{message.answer && <AnswerEvidence answer={message.answer} onCitation={showCitation} onFeedback={rateAnswer} />}</div></div>)}{chatBusy && <div className="message-row assistant"><div className="message-avatar assistant-avatar"><Layers3 size={16} /></div><div className="message-content"><div className="message-author">Atlas <span>Searching your documents</span></div><div className="thinking"><span /><span /><span /></div></div></div>}<div ref={chatEnd} /></div>
           </div>}
-          <div className="composer-wrap"><form className="composer" onSubmit={sendQuestion}><textarea value={query} onChange={(event) => setQuery(event.target.value)} onKeyDown={(event) => { if (event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); event.currentTarget.form?.requestSubmit() } }} placeholder={chatBusy ? 'You can draft your next question while Atlas responds…' : 'Ask a question about your documents…'} rows={1} maxLength={4000} /><div className="composer-footer"><div className="composer-options"><label className="select-wrap"><span className="sr-only">Retrieval mode</span><Filter size={14} /><select value={mode} onChange={(event) => setMode(event.target.value as SearchMode)}><option value="hybrid">Hybrid search</option><option value="dense">Semantic</option><option value="keyword">Keyword</option></select><ChevronDown size={12} /></label><button type="button" className={rerank ? 'rerank-toggle selected' : 'rerank-toggle'} onClick={() => setRerank(!rerank)}><Gauge size={14} /> Rerank <span className="toggle-dot" /></button></div><button className="send-button" type="submit" disabled={!query.trim() || chatBusy} aria-label={chatBusy ? 'Wait for the current answer before sending' : 'Send question'} title={chatBusy ? 'You can draft a question while Atlas finishes this answer' : 'Send question'}><Send size={16} /></button></div></form><div className="composer-caption"><ShieldCheck size={12} />{chatBusy ? 'The chat stays available while Atlas answers. You can draft a follow-up now.' : 'Answers include source citations and may abstain when evidence is insufficient.'}</div></div>
+          <div className="composer-wrap"><form className="composer" onSubmit={sendQuestion}><textarea value={query} onChange={(event) => setQuery(event.target.value)} onKeyDown={(event) => { if (event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); event.currentTarget.form?.requestSubmit() } }} placeholder={chatBusy ? 'You can draft your next question while Atlas responds…' : 'Ask a question about your documents…'} rows={1} maxLength={4000} /><div className="composer-footer"><div className="composer-options">{llmModels.length > 0 && <label className="select-wrap model-select-wrap"><span className="control-label">Model</span><Sparkles size={14} /><select aria-label="Answer model" value={selectedModel} onChange={(event) => setSelectedModel(event.target.value)}>{llmModels.map((model) => <option value={model} key={model}>{model}</option>)}</select><ChevronDown size={12} /></label>}<label className="select-wrap retrieval-select-wrap"><span className="control-label">Search</span><Filter size={14} /><select aria-label="Retrieval mode" value={mode} onChange={(event) => setMode(event.target.value as SearchMode)}><option value="hybrid">Hybrid</option><option value="dense">Semantic</option><option value="keyword">Keyword</option></select><ChevronDown size={12} /></label><button type="button" className={rerank ? 'rerank-toggle selected' : 'rerank-toggle'} onClick={() => setRerank(!rerank)}><Gauge size={14} /> Rerank <span className="toggle-dot" /></button></div><button className="send-button" type="submit" disabled={!query.trim() || chatBusy} aria-label={chatBusy ? 'Wait for the current answer before sending' : 'Send question'} title={chatBusy ? 'You can draft a question while Atlas finishes this answer' : 'Send question'}><Send size={16} /></button></div></form><div className="composer-caption"><ShieldCheck size={12} />{chatBusy ? 'The chat stays available while Atlas answers. You can draft a follow-up now.' : 'Answers include source citations and may abstain when evidence is insufficient.'}</div></div>
         </section>}
 
         {view === 'documents' && <section className="page-content documents-page">
@@ -469,7 +486,20 @@ function AnswerEvidence({ answer, onCitation, onFeedback }: { answer: ChatRespon
     setSavingRating(false)
   }
   const citationById = new Map(answer.citations.map((item) => [item.chunk_id, item]))
-  const citationIds = [...new Set(answer.claims.flatMap((claim) => claim.source_chunk_ids))]
+  const citationIds = [...new Set([
+    ...answer.claims.flatMap((claim) => claim.source_chunk_ids),
+    ...answer.conflicts.flatMap((conflict) => conflict.source_chunk_ids),
+  ])].sort((firstId, secondId) => {
+    const first = citationById.get(firstId)
+    const second = citationById.get(secondId)
+    const filenameOrder = (first?.filename ?? '').localeCompare(second?.filename ?? '')
+    if (filenameOrder !== 0) return filenameOrder
+    const firstPage = first?.page_number ?? Number.MAX_SAFE_INTEGER
+    const secondPage = second?.page_number ?? Number.MAX_SAFE_INTEGER
+    if (firstPage !== secondPage) return firstPage - secondPage
+    const ordinalOrder = (first?.ordinal ?? 0) - (second?.ordinal ?? 0)
+    return ordinalOrder || firstId.localeCompare(secondId)
+  })
   return <div className="answer-evidence">{answer.abstained && <div className="abstain-note"><TriangleAlert size={15} />{answer.abstention_reason || 'There is not enough evidence in your documents to answer confidently.'}</div>}{citationIds.length > 0 && <div className="citation-list"><div className="citation-heading"><span>SOURCES</span><span>{answer.evidence_verified ? 'Evidence checked' : 'Sources'}</span></div>{citationIds.map((id, index) => { const item = citationById.get(id); return <button className="citation-chip" key={id} onClick={() => onCitation(id, getHighlightTerms(answer.question))}><span className="citation-index">{index + 1}</span><span className="citation-info"><strong>{item?.filename ?? 'Source document'}</strong><small>{item?.page_number ? `Page ${item.page_number}` : ''}{item?.heading ? ` · ${item.heading}` : ''}</small></span><ArrowRight size={14} /></button> })}</div>}<div className="answer-meta"><span>{answer.llm_model ?? answer.llm_provider} · {answer.retrieval_mode} search</span><div><span>{savedRating ? 'Thanks for reviewing' : savingRating ? 'Saving?' : 'Was this helpful?'}</span><button type="button" className={savedRating === 'helpful' ? 'review-selected' : ''} title="Helpful" aria-label="Mark answer helpful" aria-pressed={savedRating === 'helpful'} disabled={savingRating} onClick={() => void submitRating('helpful')}><ThumbsUp size={14} /></button><button type="button" className={savedRating === 'not_helpful' ? 'review-selected' : ''} title="Not helpful" aria-label="Mark answer not helpful" aria-pressed={savedRating === 'not_helpful'} disabled={savingRating} onClick={() => void submitRating('not_helpful')}><ThumbsDown size={14} /></button></div></div></div>
 }
 

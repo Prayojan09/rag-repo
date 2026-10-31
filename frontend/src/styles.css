@@ -48,3 +48,28 @@
 .chat-active .message-list{min-height:0;overflow-y:auto;overflow-x:hidden;overscroll-behavior-y:contain;scrollbar-gutter:stable}
 .chat-active .composer-wrap{flex:none}
 @media(max-width:650px){.chat-active .chat-page{height:calc(100vh - 54px);height:calc(100dvh - 54px)}}
+.model-select-wrap select{max-width:220px;text-overflow:ellipsis}
+@media(max-width:650px){.model-select-wrap select{max-width:135px}}
+.composer-options{min-width:0;flex-wrap:wrap;gap:8px}
+.composer .select-wrap,.composer .rerank-toggle{height:34px;padding:0 10px;border-color:#e3e8f0;background:#fbfcfe;color:#536176;font-size:11px}
+.composer .select-wrap{min-width:0;gap:7px}
+.composer .select-wrap select{min-width:0;color:#344054;font-size:11px}
+.composer .model-select-wrap select{width:min(300px,40vw);max-width:none;text-overflow:ellipsis;color-scheme:light}
+.composer .model-select-wrap select option,.composer .retrieval-select-wrap select option{background:#fff;color:#263449}
+.composer .retrieval-select-wrap select{width:92px}
+.control-label{flex:none;color:#78869a;font-size:10px;font-weight:700;letter-spacing:.15px}
+.composer .select-wrap>svg{flex:none;color:#7386a3}
+@media(max-width:760px){
+  .composer-footer{align-items:flex-end;gap:8px}
+  .composer-options{display:grid;grid-template-columns:minmax(0,1fr) auto;flex:1}
+  .composer .model-select-wrap{grid-column:1/-1}
+  .composer .model-select-wrap select{width:auto;flex:1}
+  .composer .retrieval-select-wrap{justify-self:start}
+  .composer .retrieval-select-wrap select{width:auto;max-width:130px}
+  .composer .rerank-toggle{justify-self:start}
+}
+@media(max-width:420px){
+  .composer .select-wrap,.composer .rerank-toggle{padding:0 7px;gap:5px}
+  .composer .model-select-wrap select{max-width:180px}
+  .composer .retrieval-select-wrap select{max-width:95px}
+}

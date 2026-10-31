@@ -187,7 +187,7 @@ def answer_question(
             llm_model=None,
         )
 
-    provider = provider or get_llm_provider()
+    provider = provider or get_llm_provider(request.model)
     reset_usage = getattr(provider, "reset_usage", None)
     if callable(reset_usage):
         reset_usage()
